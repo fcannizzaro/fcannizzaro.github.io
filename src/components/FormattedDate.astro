@@ -1,0 +1,12 @@
+---
+interface Props {
+	date: Date;
+}
+
+const { date } = Astro.props;
+const formatted = date.toISOString().split('T')[0];
+---
+
+<time datetime={date.toISOString()} class="text-xs text-text-muted tabular-nums shrink-0">
+	{formatted}
+</time>

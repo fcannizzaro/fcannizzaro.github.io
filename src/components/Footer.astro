@@ -1,0 +1,16 @@
+---
+import { GITHUB_URL, PATREON_URL, KOFI_URL } from '../consts';
+---
+
+<footer class="w-full max-w-3xl mx-auto px-4 md:px-8 pb-8 pt-4">
+	<div class="border-t border-border mb-4"></div>
+	<div class="flex items-center justify-between text-xs text-text-muted">
+		<span class="glitch">&copy; {new Date().getFullYear()} fcannizzaro</span>
+		<div class="flex items-center gap-4">
+			<a href="/rss.xml" class="hover:text-text no-underline transition-colors">[rss]</a>
+			<a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="hover:text-text no-underline transition-colors">[github]</a>
+			<a href={PATREON_URL} target="_blank" rel="noopener noreferrer" class="hover:text-text no-underline transition-colors">[patreon]</a>
+			<a href={KOFI_URL} target="_blank" rel="noopener noreferrer" class="hover:text-text no-underline transition-colors">[kofi]</a>
+		</div>
+	</div>
+</footer>

@@ -1,0 +1,56 @@
+---
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<div class="mt-12 pt-8 border-t border-dashed border-border-focus text-center">
+	<button
+		data-share-button
+		data-share-title={title}
+		data-share-description={description}
+		type="button"
+		class="w-full text-lg tracking-wider text-text-muted hover:text-text transition-colors min-h-[48px] py-3 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-border-focus"
+		aria-label="Share this post — opens native share sheet or copies link"
+	>
+		<span class="bracket">[</span>
+		<span data-share-label> SHARE </span>
+		<span class="bracket">]</span>
+	</button>
+</div>
+
+<script is:inline>
+	document.addEventListener('astro:page-load', () => {
+		document.querySelectorAll('[data-share-button]').forEach((btn) => {
+			btn.addEventListener('click', async () => {
+				const title = btn.getAttribute('data-share-title');
+				const description = btn.getAttribute('data-share-description');
+				const url = location.href;
+				const label = btn.querySelector('[data-share-label]');
+
+				if (navigator.share) {
+					try {
+						await navigator.share({ title, text: description, url });
+					} catch (err) {
+						if (err.name !== 'AbortError') {
+							console.error('Share failed:', err);
+						}
+					}
+				} else {
+					try {
+						await navigator.clipboard.writeText(url);
+						label.textContent = ' COPIED! ';
+						setTimeout(() => {
+							label.textContent = ' SHARE ';
+						}, 2000);
+					} catch (err) {
+						console.error('Copy failed:', err);
+					}
+				}
+			});
+		});
+	});
+</script>

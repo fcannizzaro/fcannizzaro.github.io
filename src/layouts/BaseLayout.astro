@@ -1,0 +1,42 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: string;
+	pubDate?: Date;
+	updatedDate?: Date;
+	type?: 'article' | 'website';
+}
+
+const { title, description, image, pubDate, updatedDate, type } = Astro.props;
+
+const terminalTransition = {
+	forwards: {
+		old: { name: 'terminal-clear', duration: '0.15s', easing: 'ease-out', fillMode: 'forwards' as const },
+		new: { name: 'terminal-print', duration: '0.3s', easing: 'ease-in-out', delay: '0.15s', fillMode: 'backwards' as const },
+	},
+	backwards: {
+		old: { name: 'terminal-clear', duration: '0.15s', easing: 'ease-out', fillMode: 'forwards' as const },
+		new: { name: 'terminal-print', duration: '0.3s', easing: 'ease-in-out', delay: '0.15s', fillMode: 'backwards' as const },
+	},
+};
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} image={image} pubDate={pubDate} updatedDate={updatedDate} type={type} />
+	</head>
+	<body class="bg-bg-outer text-text font-mono min-h-screen flex flex-col">
+		<div class="w-full max-w-3xl mx-auto bg-bg min-h-screen flex flex-col">
+			<Header />
+			<main class="flex-1 w-full px-4 md:px-8 py-8" transition:animate={terminalTransition}>
+				<slot />
+			</main>
+			<Footer />
+		</div>
+	</body>
+</html>

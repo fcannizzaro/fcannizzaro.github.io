@@ -1,0 +1,28 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import ProjectPage from "../../layouts/ProjectPage.astro";
+import { fetchRepoData } from "../../lib/github";
+
+export async function getStaticPaths() {
+    const projects = await getCollection("projects");
+    return projects.map((project) => ({
+        params: { slug: project.id.replace("proj::", "") },
+        props: project,
+    }));
+}
+
+type Props = CollectionEntry<"projects">;
+
+const project = Astro.props;
+const { Content } = await render(project);
+const repoData = await fetchRepoData([project.data.repo]);
+const body = project.body?.trim();
+---
+
+<ProjectPage
+    {...project.data}
+    stars={repoData[project.data.repo]?.stars ?? 0}
+    hasContent={!!body}
+>
+    <Content />
+</ProjectPage>

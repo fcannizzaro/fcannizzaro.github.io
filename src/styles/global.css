@@ -1,0 +1,339 @@
+@import "tailwindcss";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/700.css";
+
+@theme {
+    --color-bg: #0e0e0e;
+    --color-bg-outer: #111111;
+    --color-bg-panel: #161616;
+    --color-bg-code: #1a1a1a;
+
+    --color-text: #d4d4d4;
+    --color-text-muted: #737373;
+    --color-text-heading: #f5f5f5;
+    --color-text-link: #a3a3a3;
+
+    --color-border: #262626;
+    --color-border-focus: #525252;
+
+    --color-accent: #e5e5e5;
+    --color-accent-warm: #e84545;
+
+    --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+}
+
+/* Light theme overrides */
+html.light {
+    --color-bg: #fafafa;
+    --color-bg-outer: #f0f0f0;
+    --color-bg-panel: #e8e8e8;
+    --color-bg-code: #1a1a1a;
+    --color-text: #2e2e2e;
+    --color-text-muted: #6b6b6b;
+    --color-text-heading: #1a1a1a;
+    --color-text-link: #555555;
+    --color-border: #d4d4d4;
+    --color-border-focus: #a3a3a3;
+    --color-accent: #333333;
+    --color-accent-warm: #d93636;
+}
+
+html.light .prose code {
+    background-color: #1a1a1a;
+    color: #e5e5e5;
+    border-color: #333333;
+}
+
+html.light .prose pre {
+    background-color: #1a1a1a !important;
+    border-color: #333333;
+}
+
+html.light .prose pre code {
+    color: inherit;
+}
+
+/* Subtle glitch — header/footer only */
+@keyframes glitch {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    92% {
+        opacity: 1;
+    }
+    93% {
+        opacity: 0.7;
+        transform: translateX(-2px);
+    }
+    94% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    96% {
+        opacity: 0.8;
+        transform: translateX(1px);
+    }
+    97% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.glitch {
+    animation: glitch 8s infinite;
+}
+
+/* Blinking caret — header */
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+.caret {
+    animation: blink 1s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glitch {
+        animation: none;
+    }
+    .caret {
+        animation: none;
+    }
+    * {
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* Terminal view transitions */
+@keyframes terminal-clear {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes terminal-print {
+    from {
+        opacity: 0;
+        clip-path: inset(0 0 100% 0);
+    }
+    to {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* ===========================
+   Link hover — sliding invert
+   =========================== */
+
+a:not(pre a):not(.no-slide) {
+    background: linear-gradient(
+            var(--color-text-heading),
+            var(--color-text-heading)
+        )
+        no-repeat;
+    background-size: 0% 100%;
+    background-position: 0% 100%;
+    transition:
+        background-size 0.25s ease,
+        color 0.25s ease;
+    padding: 1px 2px;
+    margin: -1px -2px;
+}
+
+a:not(pre a):not(.no-slide):hover {
+    background-size: 100% 100%;
+    color: var(--color-bg) !important;
+}
+
+/* ===========================
+   PROSE — minimal terminal
+   =========================== */
+
+.prose {
+    max-width: 100%;
+    line-height: 1.7;
+    font-family: var(--font-mono);
+    color: var(--color-text);
+}
+
+.prose h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-heading);
+    border-bottom: 1px dashed var(--color-border-focus);
+    padding-bottom: 0.5rem;
+}
+
+.prose h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-heading);
+}
+
+.prose h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-heading);
+}
+
+.prose p {
+    margin-bottom: 1.25rem;
+}
+
+.prose a {
+    color: var(--color-text-heading);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition:
+        background-size 0.25s ease,
+        color 0.25s ease;
+}
+
+.prose strong {
+    color: var(--color-text-heading);
+    font-weight: 700;
+}
+
+.prose code {
+    background-color: var(--color-bg-code);
+    color: var(--color-text-heading);
+    padding: 0.15em 0.4em;
+    font-size: 0.875em;
+    border: 1px solid var(--color-border);
+}
+
+.prose pre {
+    background-color: var(--color-bg-code) !important;
+    border: 1px solid var(--color-border);
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+}
+
+.prose pre code {
+    all: unset;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+}
+
+.prose blockquote {
+    border-left: 2px solid var(--color-border-focus);
+    padding: 0.5rem 1rem;
+    margin: 0 0 1.25rem 0;
+    color: var(--color-text-muted);
+}
+
+.prose blockquote p {
+    margin-bottom: 0;
+}
+
+.prose ul,
+.prose ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.prose ul {
+    list-style: none;
+    counter-reset: list-item;
+}
+
+.prose li {
+    margin-bottom: 0.35rem;
+}
+
+.prose ul > li {
+    counter-increment: list-item;
+}
+
+.prose ul > li::before {
+    content: "[" counter(list-item) "]";
+    color: var(--color-text-muted);
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+.prose ol li::marker {
+    color: var(--color-text-muted);
+    font-weight: 700;
+}
+
+/* Links section — last ul in prose */
+.prose > ul:last-child {
+    list-style: none;
+    padding-left: 0;
+}
+
+.prose > ul:last-child > li::before {
+    content: none;
+}
+
+.prose hr {
+    border: none;
+    border-top: 1px dashed var(--color-border-focus);
+    margin: 2rem 0;
+}
+
+.prose img {
+    max-width: 100%;
+    height: auto;
+    margin: auto;
+}
+
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+.prose th {
+    background-color: var(--color-bg-panel);
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--color-text-heading);
+}
+.prose td {
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+}
+
+/* Share button bracket weight */
+.bracket {
+    display: inline-block;
+    transform: scale(1.25);
+    margin: 0 0.125rem;
+}
+
+/* Screen reader only */
+.sr-only {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

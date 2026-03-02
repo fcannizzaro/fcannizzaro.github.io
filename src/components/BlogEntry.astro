@@ -1,0 +1,48 @@
+---
+import { relativeDate } from "../lib/relative-date";
+
+interface Props {
+    title: string;
+    pubDate: Date;
+    description: string;
+    slug: string;
+    minutesRead: number;
+}
+
+const { title, pubDate, description, slug, minutesRead } = Astro.props;
+const ago = relativeDate(pubDate);
+---
+
+<a
+    href={`/blog/${slug}/`}
+    class="group block no-underline py-3 first:pt-0 no-slide"
+>
+    <span class="text-text-heading group-hover:text-accent transition-colors">
+        {title}
+    </span>
+    <p class="text-xs text-text-muted mt-1 line-clamp-1">{description}</p>
+    <div class="flex items-center justify-between mt-1.5">
+        <time
+            datetime={pubDate.toISOString()}
+            class="text-xs text-text-muted tabular-nums"
+        >
+            [{ago}]
+        </time>
+        <span class="text-xs text-text-muted flex items-center gap-1">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><circle cx="12" cy="12" r="10"></circle><polyline
+                    points="12 6 12 12 16 14"></polyline></svg
+            >
+            [{minutesRead} min]
+        </span>
+    </div>
+</a>

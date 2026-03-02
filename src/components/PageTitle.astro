@@ -1,0 +1,12 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div class="mb-6">
+	<h1 class="text-lg font-bold text-text-heading">{title}</h1>
+	<div class="text-text-muted text-xs mt-1" aria-hidden="true">{'─'.repeat(40)}</div>
+</div>

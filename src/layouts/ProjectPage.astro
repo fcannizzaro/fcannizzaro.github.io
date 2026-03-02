@@ -1,0 +1,66 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ShareButton from '../components/ShareButton.astro';
+import Tag from '../components/Tag.astro';
+
+interface Props {
+	name: string;
+	description: string;
+	url: string;
+	language: string;
+	stars: number;
+	status?: 'alpha' | 'beta';
+	tags?: string[];
+	cover?: ImageMetadata;
+	hasContent: boolean;
+}
+
+const { name, description, url, language, stars, status, tags = [], hasContent } = Astro.props;
+---
+
+<BaseLayout title={name} description={description}>
+	<article>
+		<a href="/projects/" class="text-xs text-text-muted hover:text-text no-underline transition-colors">
+			&larr; back
+		</a>
+
+		<header class="mt-6 mb-8">
+			<div class="flex items-baseline gap-2">
+				<h1 class="text-xl font-bold text-text-heading">{name}</h1>
+				{status && <span class="text-xs text-amber-500 font-medium">[{status}]</span>}
+			</div>
+
+			<div class="flex items-center gap-3 text-xs text-text-muted mt-2">
+				<span>{language}</span>
+				{stars > 0 && <span>&starf; {stars}</span>}
+			</div>
+
+			{tags.length > 0 && (
+				<div class="flex flex-wrap gap-1.5 mt-2">
+					{tags.map((tag: string) => <Tag tag={tag} linked={false} />)}
+				</div>
+			)}
+
+			<p class="text-sm text-text-muted mt-4">{description}</p>
+
+			<div class="flex gap-3 mt-3">
+				<a
+					href={url}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-xs text-text-muted hover:text-text no-underline transition-colors"
+				>
+					{url.includes('github.com') ? '[github]' : '[website]'}
+				</a>
+			</div>
+		</header>
+
+		{hasContent && (
+			<div class="prose">
+				<slot />
+			</div>
+		)}
+
+		<ShareButton title={name} description={description} />
+	</article>
+</BaseLayout>

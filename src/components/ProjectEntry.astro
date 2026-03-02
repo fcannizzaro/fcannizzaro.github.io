@@ -1,0 +1,40 @@
+---
+import { entrySlug } from "../lib/utils";
+
+interface Props {
+    name: string;
+    description: string;
+    slug: string;
+    language: string;
+    stars: number;
+    status?: "alpha" | "beta";
+}
+
+const { name, description, slug, language, stars, status } = Astro.props;
+---
+
+<a
+    href={`/projects/${entrySlug(slug)}/`}
+    class="group block no-underline py-3 first:pt-0 no-slide"
+>
+    <div class="flex items-baseline gap-2">
+        <span
+            class="text-text-heading group-hover:text-accent transition-colors"
+            >{name}</span
+        >
+        <span class="text-xs text-text-muted">{language}</span>
+        {
+            stars > 0 && (
+                <span class="text-xs text-text-muted">&starf; {stars}</span>
+            )
+        }
+        {
+            status && (
+                <span class="text-xs text-amber-500 font-medium">
+                    [{status}]
+                </span>
+            )
+        }
+    </div>
+    <p class="text-xs text-text-muted mt-1">{description}</p>
+</a>

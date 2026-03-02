@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageTitle from '../../../components/PageTitle.astro';
+import { SITE_TITLE } from '../../../consts';
+
+const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+const tagCounts = new Map<string, number>();
+
+posts.forEach((post) => {
+	post.data.tags.forEach((tag: string) => {
+		tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+	});
+});
+
+const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title={`tags — ${SITE_TITLE}`} description="Browse posts by tag.">
+	<PageTitle title="tags" />
+
+	<div class="space-y-1">
+		{sortedTags.map(([tag, count]) => (
+			<a
+				href={`/blog/tags/${tag}/`}
+				class="block text-sm text-text-muted hover:text-text no-underline transition-colors py-1 no-slide"
+			>
+				[{tag}] <span class="text-xs">({count})</span>
+			</a>
+		))}
+	</div>
+</BaseLayout>

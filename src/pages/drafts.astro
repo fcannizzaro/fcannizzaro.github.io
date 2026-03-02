@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlogEntry from '../components/BlogEntry.astro';
+import PageTitle from '../components/PageTitle.astro';
+import { SITE_TITLE } from '../consts';
+import { getReadingTime } from '../lib/reading-time';
+
+// 404 in production — drafts are dev-only
+if (import.meta.env.PROD) {
+	return Astro.redirect('/404');
+}
+
+const drafts = (await getCollection('blog'))
+	.filter((p) => p.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title={`drafts — ${SITE_TITLE}`} description="Draft posts (dev only).">
+	<PageTitle title="drafts" />
+
+	{drafts.length === 0 ? (
+		<p class="text-sm text-text-muted">No drafts found.</p>
+	) : (
+		<div class="border-t border-border divide-y divide-border">
+			{drafts.map((post) => (
+				<BlogEntry
+					title={post.data.title}
+					description={post.data.description}
+					pubDate={post.data.pubDate}
+					slug={post.id}
+					minutesRead={getReadingTime(post.body ?? '')}
+				/>
+			))}
+		</div>
+	)}
+</BaseLayout>

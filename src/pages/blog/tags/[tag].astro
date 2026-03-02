@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BlogEntry from '../../../components/BlogEntry.astro';
+import PageTitle from '../../../components/PageTitle.astro';
+import { SITE_TITLE } from '../../../consts';
+import { getReadingTime } from '../../../lib/reading-time';
+
+export async function getStaticPaths() {
+    const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+    const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+
+	return tags.map((tag) => ({
+		params: { tag },
+		props: {
+			tag,
+			posts: posts
+				.filter((p) => p.data.tags.includes(tag))
+				.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+		},
+	}));
+}
+
+interface Props {
+	tag: string;
+	posts: Awaited<ReturnType<typeof getCollection<'blog'>>>;
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={`${tag} — ${SITE_TITLE}`} description={`Posts tagged "${tag}".`}>
+	<a href="/blog/tags/" class="text-xs text-text-muted hover:text-text no-underline transition-colors">
+		&larr; all tags
+	</a>
+
+	<PageTitle title={`[${tag}]`} />
+
+	<div class="border-t border-border divide-y divide-border">
+		{posts.map((post) => (
+			<BlogEntry
+				title={post.data.title}
+				description={post.data.description}
+				pubDate={post.data.pubDate}
+				slug={post.id}
+				minutesRead={getReadingTime(post.body ?? '')}
+			/>
+		))}
+	</div>
+</BaseLayout>

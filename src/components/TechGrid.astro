@@ -1,0 +1,67 @@
+---
+import {
+    siTypescript,
+    siJavascript,
+    siPython,
+    siGo,
+    siKotlin,
+    siRust,
+    siCplusplus,
+    siNodedotjs,
+    siBun,
+    siAstro as siAstroIcon,
+    siReact,
+    siRedis,
+    siDocker,
+    siGithub,
+    siClaude,
+    siKubernetes,
+} from "simple-icons";
+
+const techs = [
+    { icon: siTypescript, label: "TypeScript" },
+    { icon: siJavascript, label: "JavaScript" },
+    { icon: siPython, label: "Python" },
+    { icon: siGo, label: "Go" },
+    { icon: siKotlin, label: "Kotlin" },
+    { icon: siRust, label: "Rust" },
+    { icon: siCplusplus, label: "C++" },
+    { icon: siNodedotjs, label: "Node.js" },
+    { icon: siBun, label: "Bun" },
+    { icon: siAstroIcon, label: "Astro" },
+    { icon: siReact, label: "React" },
+    { icon: siRedis, label: "Redis" },
+    { icon: siDocker, label: "Docker" },
+    { icon: siKubernetes, label: "Kubernetes" },
+    { icon: siGithub, label: "GitHub" },
+    { icon: siClaude, label: "Claude" },
+];
+---
+
+<section>
+    <div
+        class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2"
+        role="list"
+        aria-label="Technologies I work with"
+    >
+        {
+            techs.map(({ icon, label }) => (
+                <div
+                    class="flex items-center justify-center aspect-square border border-border rounded bg-bg-panel text-text-muted hover:text-text-heading hover:border-border-focus transition-colors"
+                    role="listitem"
+                    title={label}
+                >
+                    <span class="sr-only">{label}</span>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        class="size-7"
+                    >
+                        <path d={icon.path} />
+                    </svg>
+                </div>
+            ))
+        }
+    </div>
+</section>

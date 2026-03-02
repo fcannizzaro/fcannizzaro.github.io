@@ -1,0 +1,19 @@
+---
+interface Props {
+	title?: string;
+	href?: string;
+}
+
+const { title, href } = Astro.props;
+---
+
+<div class="flex items-center text-xs my-6 select-none text-text-muted overflow-hidden">
+	<span class="whitespace-nowrap overflow-hidden" aria-hidden="true">{'═'.repeat(3)}&nbsp;</span>
+	{title && (
+		<h2 class="shrink-0 font-bold whitespace-nowrap">[ {title} ]</h2>
+	)}
+	<span class="flex-1 whitespace-nowrap overflow-hidden" aria-hidden="true">&nbsp;{'═'.repeat(200)}</span>
+	{href && (
+		<a href={href} class="shrink-0 ml-3 whitespace-nowrap hover:text-text no-underline transition-colors">[ all &rarr; ]</a>
+	)}
+</div>

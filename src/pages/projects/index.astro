@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectEntry from '../../components/ProjectEntry.astro';
+import { SITE_TITLE } from '../../consts';
+import { fetchRepoData } from '../../lib/github';
+
+const allProjects = await getCollection('projects');
+const repoData = await fetchRepoData(allProjects.map((p) => p.data.repo));
+
+const projects = allProjects.sort((a, b) => {
+	const pushA = repoData[a.data.repo]?.pushedAt ?? "";
+	const pushB = repoData[b.data.repo]?.pushedAt ?? "";
+	return pushB.localeCompare(pushA);
+});
+---
+
+<BaseLayout title={`projects — ${SITE_TITLE}`} description="Open source projects.">
+	<div class="divide-y divide-border">
+		{projects.map((p) => (
+			<ProjectEntry
+				name={p.data.name}
+				description={p.data.description}
+				slug={p.id}
+				language={p.data.language}
+				stars={repoData[p.data.repo]?.stars ?? 0}
+				status={p.data.status}
+			/>
+		))}
+	</div>
+</BaseLayout>

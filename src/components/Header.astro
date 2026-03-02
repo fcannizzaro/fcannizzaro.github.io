@@ -1,0 +1,62 @@
+---
+import { NAV_ITEMS } from '../consts';
+
+const pathname = Astro.url.pathname;
+---
+
+<header class="w-full max-w-3xl mx-auto px-4 md:px-8 pt-8 pb-4">
+	<div class="flex items-center justify-between text-sm">
+		<a href="/" class="flex items-center gap-2 text-text-heading no-underline hover:text-accent transition-colors">
+			<img src="/favicon.svg" alt="" width="24" height="24" class="rounded-lg bg-white p-0.5" />
+			<span><span class="glitch" aria-hidden="true">$</span> fcannizzaro<span class="caret ml-0.5" aria-hidden="true">▌</span></span>
+		</a>
+		<nav class="flex items-center gap-4">
+			{NAV_ITEMS.map((item) => {
+				const isActive = pathname === item.href ||
+					(item.href !== '/' && pathname.startsWith(item.href));
+				return (
+					<a
+						href={item.href}
+						class:list={[
+							'text-xs tracking-wide no-underline transition-colors',
+							isActive ? 'text-accent' : 'text-text-muted hover:text-text',
+						]}
+					>
+						{isActive ? `[${item.label}]` : item.label}
+					</a>
+				);
+			})}
+			<button
+				id="theme-toggle"
+				type="button"
+				class="text-xs flex-1 text-text-muted hover:text-text no-underline transition-colors cursor-pointer"
+				aria-label="Toggle theme"
+			>
+				<span id="theme-icon"></span>
+			</button>
+		</nav>
+	</div>
+	<div class="border-b border-border mt-4"></div>
+</header>
+
+<script is:inline>
+	document.addEventListener('astro:page-load', () => {
+		const btn = document.getElementById('theme-toggle');
+		const icon = document.getElementById('theme-icon');
+		const isLight = () => document.documentElement.classList.contains('light');
+
+		function updateIcon() {
+			icon.textContent = isLight() ? '[☾]' : '[☀]';
+		}
+
+		updateIcon();
+
+		btn.addEventListener('click', () => {
+			document.documentElement.classList.toggle('light');
+			localStorage.setItem('theme', isLight() ? 'light' : 'dark');
+			// keep meta theme-color in sync with current theme
+			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isLight() ? '#fafafa' : '#0e0e0e');
+			updateIcon();
+		});
+	});
+</script>

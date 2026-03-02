@@ -1,0 +1,89 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BlogEntry from "../components/BlogEntry.astro";
+import ProjectEntry from "../components/ProjectEntry.astro";
+import TechGrid from "../components/TechGrid.astro";
+import Divider from "../components/Divider.astro";
+import {
+    SITE_TITLE,
+    SITE_DESCRIPTION,
+    GITHUB_URL,
+    SITE_AUTHOR,
+} from "../consts";
+import { fetchRepoData } from "../lib/github";
+import { getReadingTime } from "../lib/reading-time";
+
+const posts = (await getCollection("blog"))
+    .filter((p) => !p.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+    .slice(0, 5);
+
+const projects = (await getCollection("projects"))
+    .filter((p) => p.data.featured)
+    .sort((a, b) => a.data.order - b.data.order)
+    .slice(0, 3);
+
+const repoData = await fetchRepoData(projects.map((p) => p.data.repo));
+---
+
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+    <section>
+        <p class="text-text mb-1">
+            Hi, I'm <strong class="text-text-heading">{SITE_AUTHOR}</strong>.
+        </p>
+        <p class="text-text-muted text-sm">
+            Full Stack Developer. I build open source tools, Stream Deck
+            plugins, and developer tooling with TypeScript and Node.js.
+        </p>
+        <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block mt-2 text-xs text-text-muted hover:text-text no-underline transition-colors"
+        >
+            [github.com/fcannizzaro]
+        </a>
+    </section>
+
+    <Divider title="recent posts" href="/blog/" />
+
+    <section>
+        <div class="divide-y divide-border">
+            {
+                posts.map((post) => (
+                    <BlogEntry
+                        title={post.data.title}
+                        description={post.data.description}
+                        pubDate={post.data.pubDate}
+                        slug={post.id}
+                        minutesRead={getReadingTime(post.body ?? "")}
+                    />
+                ))
+            }
+        </div>
+    </section>
+
+    <Divider title="tech I work with" />
+
+    <TechGrid />
+
+    <Divider title="projects" href="/projects/" />
+
+    <section>
+        <div class="divide-y divide-border">
+            {
+                projects.map((p) => (
+                    <ProjectEntry
+                        name={p.data.name}
+                        description={p.data.description}
+                        slug={p.id}
+                        language={p.data.language}
+                        stars={repoData[p.data.repo]?.stars ?? 0}
+                        status={p.data.status}
+                    />
+                ))
+            }
+        </div>
+    </section>
+</BaseLayout>

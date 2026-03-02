@@ -1,0 +1,91 @@
+---
+import { GITHUB_URL } from "../consts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const path = Astro.url.pathname;
+---
+
+<BaseLayout title="404" description="Page not found">
+    <div class="text-base px-4 md:px-8 space-y-3">
+        <p class="term-line text-text-muted" style="animation-delay: 0s">
+            <span class="text-text-heading">$</span> cat {path}
+        </p>
+        <pre
+            class="term-line text-text-muted text-xs leading-tight"
+            style="animation-delay: 0.3s">{`
+  _  _    ___  _  _
+ | || |  / _ \\| || |
+ | || |_| | | | || |_
+ |__   _| | | |__   _|
+    | | | |_| |  | |
+    |_|  \\___/   |_|
+`}</pre>
+        <p
+            class="term-line text-text-heading font-bold"
+            style="animation-delay: 0.6s"
+        >
+            error: path not found
+        </p>
+        <div class="term-line" style="animation-delay: 1s">
+            <p class="text-text-muted">
+                <span class="text-text-heading">$</span>
+                <span>cd</span>
+            </p>
+        </div>
+        <div class="term-line" style="animation-delay: 1.4s">
+            <div
+                class="ml-3 w-full bg-border text-sm grid grid-cols-3 p-1 gap-y-1"
+            >
+                <a
+                    href="/"
+                    class="no-slide px-2 text-text-muted hover:text-text-link"
+                >
+                    ..
+                </a>
+                <a
+                    href="/blog"
+                    class="no-slide px-2 text-text-muted hover:text-text-link transition-colors"
+                >
+                    ../blog
+                </a>
+                <a
+                    href="/projects"
+                    class="no-slide px-2 text-text-muted hover:text-text-link transition-colors"
+                >
+                    ../projects
+                </a>
+                <a
+                    href={GITHUB_URL}
+                    class="no-slide px-2 text-text-muted hover:text-text-link transition-colors"
+                >
+                    .github
+                </a>
+            </div>
+        </div>
+    </div>
+</BaseLayout>
+
+<style>
+    @keyframes type-line {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .term-line {
+        opacity: 0;
+        animation: type-line 0.3s ease-out forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .term-line {
+            opacity: 1;
+            animation: none;
+        }
+    }
+</style>
