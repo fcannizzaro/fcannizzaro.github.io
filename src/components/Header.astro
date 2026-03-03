@@ -10,39 +10,78 @@ const pathname = Astro.url.pathname;
 			<img src="/favicon.svg" alt="" width="24" height="24" class="rounded-lg bg-white p-0.5" />
 			<span><span class="glitch" aria-hidden="true">$</span> fcannizzaro<span class="caret ml-0.5" aria-hidden="true">▌</span></span>
 		</a>
-		<nav class="flex items-center gap-4">
-			{NAV_ITEMS.map((item) => {
-				const isActive = pathname === item.href ||
-					(item.href !== '/' && pathname.startsWith(item.href));
-				return (
-					<a
-						href={item.href}
-						class:list={[
-							'text-xs tracking-wide no-underline transition-colors',
-							isActive ? 'text-accent' : 'text-text-muted hover:text-text',
-						]}
-					>
-						{isActive ? `[${item.label}]` : item.label}
-					</a>
-				);
-			})}
+
+		<div class="flex items-center gap-4">
+			{/* Desktop nav */}
+			<nav class="hidden min-[480px]:flex items-center gap-4">
+				{NAV_ITEMS.map((item) => {
+					const isActive = pathname === item.href ||
+						(item.href !== '/' && pathname.startsWith(item.href));
+					return (
+						<a
+							href={item.href}
+							class:list={[
+								'text-xs tracking-wide no-underline transition-colors',
+								isActive ? 'text-accent' : 'text-text-muted hover:text-text',
+							]}
+						>
+							{isActive ? `[${item.label}]` : item.label}
+						</a>
+					);
+				})}
+			</nav>
+
+			{/* Mobile nav */}
+			<div class="relative flex min-[480px]:hidden">
+				<button
+					id="mobile-menu-toggle"
+					type="button"
+					class="text-xs tracking-wide text-text-muted hover:text-text transition-colors cursor-pointer no-slide"
+					aria-label="Toggle navigation menu"
+					aria-expanded="false"
+					aria-controls="mobile-menu"
+				>
+					<span id="mobile-menu-label">[menu ▾]</span>
+				</button>
+				<div
+					id="mobile-menu"
+					class="hidden absolute right-0 top-full mt-2 min-w-40 bg-bg-panel border border-border p-3 flex flex-col gap-2 z-50"
+				>
+					{NAV_ITEMS.map((item) => {
+						const isActive = pathname === item.href ||
+							(item.href !== '/' && pathname.startsWith(item.href));
+						return (
+							<a
+								href={item.href}
+								class:list={[
+									'text-xs tracking-wide no-underline no-slide transition-colors',
+									isActive ? 'text-accent' : 'text-text-muted hover:text-text',
+								]}
+							>
+								{isActive ? `[${item.label}]` : item.label}
+							</a>
+						);
+					})}
+				</div>
+			</div>
+
+			{/* Theme toggle — always visible */}
 			<button
-				id="theme-toggle"
 				type="button"
-				class="text-xs flex-1 text-text-muted hover:text-text no-underline transition-colors cursor-pointer"
+				class="theme-toggle text-xs text-text-muted hover:text-text no-underline transition-colors cursor-pointer"
 				aria-label="Toggle theme"
 			>
-				<span id="theme-icon"></span>
+				<span class="theme-icon"></span>
 			</button>
-		</nav>
+		</div>
 	</div>
 	<div class="border-b border-border mt-4"></div>
 </header>
 
 <script is:inline>
 	document.addEventListener('astro:page-load', () => {
-		const btn = document.getElementById('theme-toggle');
-		const icon = document.getElementById('theme-icon');
+		const btn = document.querySelector('.theme-toggle');
+		const icon = document.querySelector('.theme-icon');
 		const isLight = () => document.documentElement.classList.contains('light');
 
 		function updateIcon() {
@@ -54,9 +93,36 @@ const pathname = Astro.url.pathname;
 		btn.addEventListener('click', () => {
 			document.documentElement.classList.toggle('light');
 			localStorage.setItem('theme', isLight() ? 'light' : 'dark');
-			// keep meta theme-color in sync with current theme
 			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isLight() ? '#fafafa' : '#0e0e0e');
 			updateIcon();
+		});
+
+		// Mobile menu
+		const toggle = document.getElementById('mobile-menu-toggle');
+		const menu = document.getElementById('mobile-menu');
+		const label = document.getElementById('mobile-menu-label');
+		if (!toggle || !menu || !label) return;
+
+		function openMenu() {
+			menu.classList.remove('hidden');
+			label.textContent = '[menu ▴]';
+			toggle.setAttribute('aria-expanded', 'true');
+		}
+
+		function closeMenu() {
+			menu.classList.add('hidden');
+			label.textContent = '[menu ▾]';
+			toggle.setAttribute('aria-expanded', 'false');
+		}
+
+		toggle.addEventListener('click', () => {
+			menu.classList.contains('hidden') ? openMenu() : closeMenu();
+		});
+
+		document.addEventListener('click', (e) => {
+			if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+				closeMenu();
+			}
 		});
 	});
 </script>
