@@ -9,7 +9,7 @@ export const LINKEDIN_URL = "https://www.linkedin.com/in/fcannizzaro/";
 
 export const NAV_ITEMS = [
   { label: "~", href: "/" },
-  { label: "blog", href: "/blog" },
-  { label: "projects", href: "/projects" },
-  { label: "about", href: "/about" },
+  { label: "blog", href: "/blog/" },
+  { label: "projects", href: "/projects/" },
+  { label: "about", href: "/about/" },
 ] as const;
