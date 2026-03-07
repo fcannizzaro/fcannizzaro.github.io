@@ -13,6 +13,7 @@ export default defineConfig({
     mdx(),
     sitemap({
       filter: (page) => !page.includes("/drafts/"),
+      changefreq: "daily",
     }),
   ],
   vite: { plugins: [tailwindcss()] },
