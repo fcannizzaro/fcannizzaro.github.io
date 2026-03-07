@@ -20,6 +20,14 @@ Each visible action instance on the hardware gets its own isolated React root --
 
 </div>
 
+or a snake in the Stream Deck+ LCD display:
+
+<div style="background:#262626;padding:16px;padding-bottom:1px;border-radius:8px;margin:1.5rem 0">
+
+![streamdeck-react in action](./streamdeck-react-snake.gif)
+
+</div>
+
 ## A counter example looks like this:
 
 ```tsx
