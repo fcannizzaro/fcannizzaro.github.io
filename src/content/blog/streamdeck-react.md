@@ -20,7 +20,7 @@ Each visible action instance on the hardware gets its own isolated React root --
 
 </div>
 
-## A counter in 30 lines
+## A counter example looks like this:
 
 ```tsx
 import { readFile } from 'node:fs/promises';
