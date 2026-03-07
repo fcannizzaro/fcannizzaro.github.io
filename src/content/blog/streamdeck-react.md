@@ -16,13 +16,15 @@ Each visible action instance on the hardware gets its own isolated React root --
 
 <div style="background:#262626;padding:16px;padding-bottom:1px;border-radius:8px;margin:1.5rem 0">
 
+<span style="opacity: 0.7">1st row: zustand state, 2rd row: tanstack query, react basic hooks</span>
+
 ![streamdeck-react in action](./streamdeck-react.gif)
 
 </div>
 
-or a snake in the Stream Deck+ LCD display:
-
 <div style="background:#262626;padding:16px;padding-bottom:1px;border-radius:8px;margin:1.5rem 0">
+
+<span style="opacity: 0.7">snake game in the Stream Deck+ LCD display</span>
 
 ![streamdeck-react in action](./streamdeck-react-snake.gif)
 
