@@ -300,6 +300,36 @@ a:not(pre a):not(.no-slide):hover {
     max-width: 100%;
     height: auto;
     margin: auto;
+    cursor: zoom-in;
+}
+
+/* Image zoom overlay */
+.img-zoom-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    cursor: zoom-out;
+    view-transition-name: zoom-overlay;
+}
+
+.img-zoom-overlay img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border: 1px solid var(--color-border);
+}
+
+html.img-zooming::view-transition-old(root),
+html.img-zooming::view-transition-new(root) {
+    display: none;
+}
+
+html.img-zooming::view-transition-group(zoom-image) {
+    z-index: 100;
 }
 
 .prose table {

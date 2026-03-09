@@ -82,12 +82,16 @@ await plugin.connect();
 - **Declarative rendering** -- describe keys as JSX, not imperative draw calls
 - **Full React hooks** -- `useState`, `useEffect`, `useRef`, `useContext`, custom hooks all work as expected
 - **Hardware-aware hooks** -- `useKeyDown`, `useDialRotate`, `useTouchTap`, settings hooks, lifecycle hooks, and SDK helpers compose with the rest of React
+- **Gesture hooks** -- `useTap`, `useLongPress`, `useDoubleTap` for higher-level input handling on keys and touch surfaces
 - **Built-in primitives** -- `Box`, `Text`, `Image`, `Icon`, `ProgressBar`, `CircularGauge`, and `ErrorBoundary` for compact device UIs
 - **Flexible styling** -- inline styles, `className`, and a `tw()` helper for Tailwind-like utility strings
 - **Encoder and dial support** -- separate `key` and `dial` components per action, with `useDialHint` for Stream Deck+ trigger descriptions
+- **TouchBar component** -- render custom content on the Stream Deck+ touch display strip
 - **Shared state** -- Zustand stores work out of the box, Jotai and others plug in through the wrapper API on `createPlugin` or `defineAction`
 - **Output caching** -- FNV-1a hashing skips `setImage()` when the frame hasn't changed
 - **Error boundaries** -- every action root is wrapped automatically, one crash doesn't take down the plugin
+- **DevTools** -- browser-based inspector for debugging layouts and state during development
+- **React Compiler** -- optional integration via Babel plugin to automatically optimize re-renders
 
 ## Get started
 
@@ -95,7 +99,7 @@ await plugin.connect();
 bun create streamdeck-react
 ```
 
-The CLI scaffolds a complete `.sdPlugin` project -- manifest, Rollup config, fonts, and a starter example. Pick from minimal, counter, Zustand, Jotai, or React Query templates.
+The CLI scaffolds a complete `.sdPlugin` project -- manifest, bundler config (Rollup or Vite 8 with Rolldown), fonts, and a starter example. Pick from minimal, counter, Zustand, Jotai, or React Query templates.
 
 For manual setup:
 
@@ -103,4 +107,4 @@ For manual setup:
 bun add @fcannizzaro/streamdeck-react react
 ```
 
-Full documentation at [streamdeckreact.fcannizzaro.com](https://streamdeckreact.fcannizzaro.com). Source on [GitHub](https://github.com/fcannizzaro/streamdeck-react).
+Full documentation at [streamdeckreact.fcannizzaro.com](https://streamdeckreact.fcannizzaro.com). Source on [GitHub](https://github.com/fcannizzaro/streamdeck-react). Package on [npm](https://www.npmjs.com/package/@fcannizzaro/streamdeck-react).

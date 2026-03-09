@@ -40,3 +40,46 @@ const terminalTransition = {
 		</div>
 	</body>
 </html>
+
+<script>
+	document.addEventListener('astro:page-load', () => {
+		document.querySelectorAll<HTMLImageElement>('.prose img').forEach((img) => {
+			if (img.dataset.zoomBound) return;
+			img.dataset.zoomBound = 'true';
+
+			img.addEventListener('click', () => {
+				const name = 'zoom-image';
+				img.style.viewTransitionName = name;
+
+				const overlay = document.createElement('div');
+				overlay.className = 'img-zoom-overlay active';
+
+				const clone = document.createElement('img');
+				clone.src = img.src;
+				clone.alt = img.alt;
+				clone.style.viewTransitionName = name;
+				overlay.appendChild(clone);
+
+				document.documentElement.classList.add('img-zooming');
+				const t = document.startViewTransition(() => {
+					img.style.viewTransitionName = '';
+					document.body.appendChild(overlay);
+				});
+				t.finished.then(() => document.documentElement.classList.remove('img-zooming'));
+
+				overlay.addEventListener('click', () => {
+					img.style.viewTransitionName = '';
+					document.documentElement.classList.add('img-zooming');
+					const t = document.startViewTransition(() => {
+						overlay.remove();
+						img.style.viewTransitionName = name;
+					});
+					t.finished.then(() => {
+						img.style.viewTransitionName = '';
+						document.documentElement.classList.remove('img-zooming');
+					});
+				});
+			});
+		});
+	});
+</script>
