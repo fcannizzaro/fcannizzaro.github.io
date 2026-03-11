@@ -1,5 +1,5 @@
 export const SITE_AUTHOR = "Francesco Saverio Cannizzaro";
-export const SITE_TITLE = `fcannizzaro - ${SITE_AUTHOR}`;
+export const SITE_TITLE = `${SITE_AUTHOR}`;
 export const SITE_DESCRIPTION =
   "Francesco Saverio Cannizzaro — open source tools, Stream Deck plugins and developer tooling.";
 export const GITHUB_URL = "https://github.com/fcannizzaro";
