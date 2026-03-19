@@ -53,3 +53,4 @@ bun add @fcannizzaro/streamdeck-react react
 - [Documentation](https://streamdeckreact.fcannizzaro.com)
 - [GitHub](https://github.com/fcannizzaro/streamdeck-react)
 - [npm](https://www.npmjs.com/package/@fcannizzaro/streamdeck-react)
+- [agent skill](https://skills.sh/fcannizzaro/streamdeck-react/streamdeck-react)
