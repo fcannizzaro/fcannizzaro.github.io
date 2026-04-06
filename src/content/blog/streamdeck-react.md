@@ -12,7 +12,7 @@ The official `@elgato/streamdeck` SDK is powerful but low-level. You track state
 
 You write a React component for each action surface. `defineAction()` maps it to a manifest UUID. `createPlugin()` registers your actions and fonts, then `plugin.connect()` attaches to the Stream Deck runtime.
 
-Each visible action instance on the hardware gets its own isolated React root -- separate state, separate lifecycle. When state changes trigger a re-render, the library renders the JSX tree to an image and pushes it to the device via `setImage()`. Output is hashed so identical frames are never sent twice.
+Each visible action instance on the hardware gets its own isolated React root -- separate state, separate lifecycle. When state changes trigger a re-render, the library renders the JSX tree to an image via the native [Takumi](https://github.com/aspect-build/takumi) renderer and pushes it to the device. A 4-phase skip hierarchy prevents redundant work at every step.
 
 <div style="background:#262626;padding:16px;padding-bottom:1px;border-radius:8px;margin:1.5rem 0">
 
@@ -30,11 +30,10 @@ Each visible action instance on the hardware gets its own isolated React root --
 
 </div>
 
-## A counter example looks like this:
+## Counter example
 
 ```tsx
-import { readFile } from 'node:fs/promises';
-import { createPlugin, defineAction, useKeyDown, tw } from '@fcannizzaro/streamdeck-react';
+import { createPlugin, defineAction, useKeyDown, cn, googleFont } from '@fcannizzaro/streamdeck-react';
 import { useState } from 'react';
 
 function CounterKey() {
@@ -44,7 +43,7 @@ function CounterKey() {
 
   return (
     <div
-      className={tw(
+      className={cn(
         'flex h-full w-full flex-col items-center justify-center gap-1',
         'bg-linear-to-br from-[#0f172a] to-[#1d4ed8]',
       )}
@@ -60,38 +59,80 @@ function CounterKey() {
 const counterAction = defineAction({
   uuid: 'com.example.react-counter.counter',
   key: CounterKey,
+  info: {
+    name: 'Counter',
+    icon: 'imgs/actions/counter',
+  },
 });
 
 const plugin = createPlugin({
-  fonts: [
-    {
-      name: 'Inter',
-      data: await readFile(new URL('../fonts/Inter-Regular.ttf', import.meta.url)),
-      weight: 400,
-      style: 'normal',
-    },
-  ],
+  fonts: [await googleFont('Inter')],
   actions: [counterAction],
 });
 
 await plugin.connect();
 ```
 
+`defineAction()` accepts an `info` field that drives automatic `manifest.json` generation at build time -- no hand-written manifest needed. The `googleFont()` helper downloads and caches the font from Google Fonts.
+
+## Rendering pipeline
+
+The rendering pipeline is built around minimizing redundant work. Every render attempt passes through four phases before anything reaches the hardware:
+
+1. **Dirty-flag check** -- O(1) boolean check on the container root. If no VNode was mutated since the last flush, the entire render is skipped.
+2. **Merkle-tree hash + image cache** -- a structural hash of the VNode tree is compared against a byte-bounded LRU cache. Unchanged subtrees reuse cached hashes, so a single-node mutation only rehashes O(depth) nodes.
+3. **Takumi render** -- the VNode tree is converted directly to Takumi nodes (bypassing `React.createElement`) and rasterized by the native Rust renderer. This can run on a worker thread to keep the main thread free for event handling.
+4. **xxHash output dedup** -- the raw pixel buffer is hashed via xxHash-wasm. If it matches the previous frame, encoding and the hardware push are skipped entirely.
+
+On top of this, an adaptive debounce detects whether a root is animating (0ms delay), interactive (16ms), or idle (configurable), and a flush coordinator with four priority levels ensures animated and interactive keys get first access to the USB bus.
+
 ## What you get
 
-- **Declarative rendering** -- describe keys as JSX, not imperative draw calls
-- **Full React hooks** -- `useState`, `useEffect`, `useRef`, `useContext`, custom hooks all work as expected
-- **Hardware-aware hooks** -- `useKeyDown`, `useDialRotate`, `useTouchTap`, settings hooks, lifecycle hooks, and SDK helpers compose with the rest of React
+### Hooks
+
+- **Event hooks** -- `useKeyDown`, `useKeyUp`, `useDialRotate`, `useDialPress`, `useTouchTap` and more for direct hardware input
 - **Gesture hooks** -- `useTap`, `useLongPress`, `useDoubleTap` for higher-level input handling on keys and touch surfaces
-- **Built-in primitives** -- `Box`, `Text`, `Image`, `Icon`, `ProgressBar`, `CircularGauge`, and `ErrorBoundary` for compact device UIs
-- **Flexible styling** -- inline styles, `className`, and a `tw()` helper for Tailwind-like utility strings
-- **Encoder and dial support** -- separate `key` and `dial` components per action, with `useDialHint` for Stream Deck+ trigger descriptions
-- **TouchBar component** -- render custom content on the Stream Deck+ touch display strip
-- **Shared state** -- Zustand stores work out of the box, Jotai and others plug in through the wrapper API on `createPlugin` or `defineAction`
-- **Output caching** -- FNV-1a hashing skips `setImage()` when the frame hasn't changed
-- **Error boundaries** -- every action root is wrapped automatically, one crash doesn't take down the plugin
-- **DevTools** -- browser-based inspector for debugging layouts and state during development
+- **Animation hooks** -- `useSpring` (physics-based damped harmonic oscillator) and `useTween` (duration/easing) for smooth value transitions, with built-in presets like `wobbly`, `stiff`, `gentle`, and `snap`
+- **Settings hooks** -- `useSettings` and `useGlobalSettings` for per-action and plugin-wide persistent state, synced with the Property Inspector
+- **Coordinator hooks** -- `useChannel` for cross-action shared state and `useActionPresence` for tracking which actions are currently visible
+- **TouchStrip hooks** -- `useTouchStrip` for rendering across the full-width Stream Deck+ touch display
+- **Lifecycle hooks** -- `useWillAppear`, `useWillDisappear` for mount/unmount logic
+- **SDK hooks** -- `useStreamDeck`, `useAction`, `useDevice` for accessing the underlying SDK
+
+### Components
+
+- **Layout primitives** -- `Box`, `Text`, `Image`, `Icon` for building compact UIs on tiny displays
+- **Data visualization** -- `ProgressBar` and `CircularGauge` for status indicators
+- **Error handling** -- `ErrorBoundary` wraps every action root automatically, one crash doesn't take down the plugin
+
+### Styling
+
+- **Tailwind CSS** -- `cn()` helper for Tailwind-like utility strings, with full Tailwind v4 support via compiled stylesheets
+- **CSS Theme System** -- `defineTheme()` for centralized design tokens as CSS custom properties, with runtime switching via `useTheme()` and composable theme merging via `mergeThemes()`
+
+### Architecture
+
+- **One root per instance** -- each visible action gets its own isolated React root with separate state, settings, and lifecycle
+- **Root recycling** -- dormant roots are pooled and reused on profile switches, reducing latency from ~15ms to ~3ms per key
+- **Manifest auto-generation** -- `defineAction({ info })` metadata is extracted via AST analysis at build time to generate `manifest.json`
+- **Shared state** -- Zustand, Jotai, and React Query plug in through the wrapper API on `createPlugin` or `defineAction`
+- **DevTools** -- browser-based inspector for debugging layouts, state, and render performance
 - **React Compiler** -- optional integration via Babel plugin to automatically optimize re-renders
+- **Agent Skill** -- installable AI skill that teaches coding agents the full API surface for assisted plugin development
+
+## Real-world use case: HoYo Deck
+
+[HoYo Deck](https://hoyodeck.fcannizzaro.com) is a free Stream Deck plugin I built with `streamdeck-react` for HoYoverse games (Genshin Impact, Honkai: Star Rail, Zenless Zone Zero). It tracks stamina, banners, endgame progress, daily rewards, and more -- with full support for Stream Deck+ dials and touch displays.
+
+It exercises most of the library's features in production:
+
+- **Animated gauges** -- resin, trailblaze power, and battery charge use circular gauges with spring animations
+- **Shared state via coordinator** -- the stamina overview dial action shows up to three games side-by-side, sharing data across actions with `useChannel`
+- **Settings sync** -- HoYoLAB account credentials and per-game toggles are managed through `useSettings` with a custom Property Inspector
+- **TouchStrip rendering** -- the stamina overview renders a full-width layout across the Stream Deck+ touch display
+- **Encoder support** -- the wish tracker uses dial rotation to increment a pity counter, press for +10, tap to reset
+
+If you're curious, the source is on [GitHub](https://github.com/fcannizzaro/hoyodeck) and the plugin is free on the [Elgato Marketplace](https://marketplace.elgato.com).
 
 ## Get started
 
@@ -99,7 +140,7 @@ await plugin.connect();
 bun create streamdeck-react
 ```
 
-The CLI scaffolds a complete `.sdPlugin` project -- manifest, bundler config (Rollup or Vite 8 with Rolldown), fonts, and a starter example. Pick from minimal, counter, Zustand, Jotai, or React Query templates.
+The CLI scaffolds a complete `.sdPlugin` project -- manifest, bundler config (Vite with Rolldown), fonts, and a starter example. Pick from minimal, counter, Zustand, Jotai, or Pokemon (React Query) templates.
 
 For manual setup:
 

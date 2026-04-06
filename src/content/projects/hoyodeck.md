@@ -1,15 +1,15 @@
 ---
-name: Hoyodeck
+name: HoYo Deck
 description: A Stream Deck plugin for Genshin Impact / Honkai Star Rail / Zenless Zone Zero
-url: https://github.com/fcannizzaro/hoyodeck
+url: https://hoyodeck.fcannizzaro.com
 repo: fcannizzaro/hoyodeck
 language: TypeScript
 featured: true
-tags: [stream-deck, genshin-impact, plugin]
+tags: [stream-deck, genshin-impact, honkai-star-rail, zenless-zone-zero, hoyoverse, plugin]
 order: 2
 ---
 
-A Stream Deck plugin for HoYoverse games. Track your Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero stats directly on your Stream Deck through the HoYoLAB API.
+A free Stream Deck plugin for HoYoverse games. Track stamina, banners, endgame progress, daily rewards, and more for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero -- with full support for Stream Deck+ dials and touch displays.
 
 ## Motivation
 
@@ -17,29 +17,30 @@ I wanted a quick way to check my resin, trailblaze power, and battery charge wit
 
 ## Features
 
-- **Genshin Impact** -- resin counter, daily commissions, expeditions, teapot currency, transformer cooldown, spiral abyss timer, banner countdown
-- **Honkai: Star Rail** -- trailblaze power, banner countdown
-- **Zenless Zone Zero** -- battery charge, banner countdown
-- **Daily rewards** -- view and claim HoYoLAB check-in rewards for all three games
-- **Real-time updates** -- data refreshes automatically at a configurable interval
-- **HoYoLAB authentication** -- uses cookie-based auth extracted from your browser
+- **Genshin Impact** -- animated resin gauge, daily commissions tracker, expedition countdown, Serenitea Pot currency, Parametric Transformer cooldown, endgame progress (Spiral Abyss, Imaginarium Theater, Stygian Onslaught), and banner display
+- **Honkai: Star Rail** -- trailblaze power gauge, endgame progress (Memory of Chaos, Pure Fiction, Apocalyptic Shadow, Anomaly Arbitration), and banner display
+- **Zenless Zone Zero** -- battery charge gauge, endgame progress (Shiyu Defense, Deadly Assault), and banner display
+- **Daily rewards** -- preview and one-tap claim of HoYoLAB check-in rewards for all three games
+- **Redeem codes** -- auto-detect and batch redeem all available promo codes with live progress tracking
+- **Stamina overview** -- Stream Deck+ dial action showing up to three games side-by-side with rotate to focus
+- **Wish tracker** -- manual pity counter on the encoder dial, rotate to increment, press for +10, tap to reset
+- **Patch countdown** -- multi-game version countdown with color-coded badges and days/hours remaining
+- **Built-in authentication** -- secure HoYoLAB login through a built-in webview, no manual cookie extraction needed
 
 ## Getting started
 
-If you want to try the plugin early or contribute, you can clone the repo and start building locally:
+Install HoYo Deck from the [Elgato Marketplace](https://marketplace.elgato.com) -- it's free and installs in seconds.
 
-```bash
-git clone https://github.com/fcannizzaro/hoyodeck.git
-cd hoyodeck
-bun install
-bun run link
-bun run dev
 ```
-
-To use the plugin, you need to extract your HoYoLAB cookies from your browser's DevTools and paste them into the plugin settings. The plugin then uses those cookies to fetch your game data from the HoYoLAB API.
-
-Otherwise, you can wait for the official release on the Elgato Marketplace.
+1. Download from the Elgato Marketplace
+2. Log in through the built-in HoYoLAB webview
+3. Enable "Real-Time Notes" in HoYoLAB settings for each game
+4. Drag actions onto your Stream Deck layout
+```
 
 ## Links
 
+- [Website](https://hoyodeck.fcannizzaro.com)
 - [GitHub](https://github.com/fcannizzaro/hoyodeck)
+- [Elgato Marketplace](https://marketplace.elgato.com)
+- [Discord](https://discord.gg/sgVPs6wC)
