@@ -23,6 +23,10 @@ Traffic reaches Cloudflare first, travels through the outbound tunnel connection
 
 ## Setup
 
+Install Cloudflare Tunnel from the Zoraxy plugin marketplace.
+
+![Cloudflare Tunnel installed from the Zoraxy plugin marketplace](./zoraxy-cloudflare-tunnel.png)
+
 The host running Zoraxy also needs `cloudflared`:
 
 ```bash
