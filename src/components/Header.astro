@@ -23,8 +23,8 @@ const showMascot = pathname !== "/";
             </span>
         </a>
 
-        {showMascot && (
-            <div class="relative self-stretch pointer-events-none">
+        <div class="relative self-stretch pointer-events-none">
+            {showMascot && (
                 <div class="absolute inset-x-0 -bottom-4 h-16 flex items-end justify-center overflow-hidden">
                     <Mascot
                         directions="/mascots/fcannizzaro-docked-directions.webp"
@@ -37,8 +37,8 @@ const showMascot = pathname !== "/";
                         label="Francesco mascot"
                     />
                 </div>
-            </div>
-        )}
+            )}
+        </div>
 
         <div class="flex items-center gap-4">
             {/* Desktop nav */}
