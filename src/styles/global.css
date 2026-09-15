@@ -53,6 +53,17 @@ html.light .prose pre code {
   color: inherit;
 }
 
+/* Terminal-style text selection */
+::selection {
+  color: var(--color-bg);
+  background-color: var(--color-text-heading);
+}
+
+::-moz-selection {
+  color: var(--color-bg);
+  background-color: var(--color-text-heading);
+}
+
 /* Subtle glitch — header/footer only */
 @keyframes glitch {
   0%,

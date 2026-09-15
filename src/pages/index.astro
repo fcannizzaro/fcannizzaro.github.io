@@ -26,26 +26,12 @@ const projects = (await getCollection("projects"))
     .slice(0, 3);
 
 const repoData = await fetchRepoData(projects.map((p) => p.data.repo));
-const authorWords = SITE_AUTHOR.split(" ");
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
     <section class="home-hero">
         <p class="home-hero__greeting text-text">
-            Hi, I'm <strong class="home-hero__name text-text-heading">{
-                    authorWords.map((word, index) => (
-                        <>
-                            <span
-                                class="home-hero__name-word"
-                                style={`--word-index: ${index}`}
-                            >
-                                {word}
-                            </span>
-                            {index < authorWords.length - 1 && " "}
-                        </>
-                    ))
-                }</strong
-            >.
+            Hi, I'm <strong class="home-hero__name">{SITE_AUTHOR}</strong>.
         </p>
         <div class="home-hero__mascot">
             <Mascot
@@ -132,26 +118,12 @@ const authorWords = SITE_AUTHOR.split(" ");
         min-width: 0;
     }
 
-    .home-hero__name-word {
+    .home-hero__name {
         display: inline-block;
         padding-inline: 0.08em;
         margin-inline: -0.08em;
-        animation: select-author-word 3s steps(1, end) infinite;
-        animation-delay: calc(var(--word-index) * 1s);
-    }
-
-    @keyframes select-author-word {
-        0%,
-        32% {
-            color: var(--color-bg);
-            background-color: var(--color-text-heading);
-        }
-
-        33%,
-        100% {
-            color: var(--color-text-heading);
-            background-color: transparent;
-        }
+        color: var(--color-bg);
+        background-color: var(--color-text-heading);
     }
 
     .home-hero__description {
@@ -203,12 +175,6 @@ const authorWords = SITE_AUTHOR.split(" ");
 
         .home-hero__link {
             margin-top: 0.5rem;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .home-hero__name-word {
-            animation: none;
         }
     }
 </style>
