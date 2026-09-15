@@ -26,35 +26,50 @@ const projects = (await getCollection("projects"))
     .slice(0, 3);
 
 const repoData = await fetchRepoData(projects.map((p) => p.data.repo));
+const authorWords = SITE_AUTHOR.split(" ");
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-    <section class="flex items-center justify-between gap-4">
-        <div>
-            <p class="text-text mb-1">
-                Hi, I'm <strong class="text-text-heading">{SITE_AUTHOR}</strong>.
-            </p>
-            <p class="text-text-muted text-sm">
-                Full Stack Developer. I build open source tools, Stream Deck
-                plugins, and developer tooling with TypeScript and Node.js.
-            </p>
-            <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-block mt-2 text-xs text-text-muted hover:text-text no-underline transition-colors"
-            >
-                [github.com/fcannizzaro]
-            </a>
+    <section class="home-hero">
+        <p class="home-hero__greeting text-text">
+            Hi, I'm <strong class="home-hero__name text-text-heading">{
+                    authorWords.map((word, index) => (
+                        <>
+                            <span
+                                class="home-hero__name-word"
+                                style={`--word-index: ${index}`}
+                            >
+                                {word}
+                            </span>
+                            {index < authorWords.length - 1 && " "}
+                        </>
+                    ))
+                }</strong
+            >.
+        </p>
+        <div class="home-hero__mascot">
+            <Mascot
+                directions="/mascots/fcannizzaro-directions.webp"
+                reactions="/mascots/fcannizzaro-reactions.webp"
+                dockedDirections="/mascots/fcannizzaro-docked-directions.webp"
+                dockedReactions="/mascots/fcannizzaro-docked-reactions.webp"
+                size={180}
+                label="Francesco mascot"
+                class="home-hero__mascot-slot"
+            />
         </div>
-        <Mascot
-            directions="/mascots/fcannizzaro-directions.webp"
-            reactions="/mascots/fcannizzaro-reactions.webp"
-            dockedDirections="/mascots/fcannizzaro-docked-directions.webp"
-            dockedReactions="/mascots/fcannizzaro-docked-reactions.webp"
-            size={140}
-            label="Francesco mascot"
-        />
+        <p class="home-hero__description text-text-muted text-sm">
+            Full Stack Developer. I build open source tools, Stream Deck plugins,
+            and developer tooling with TypeScript and Node.js.
+        </p>
+        <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="home-hero__link inline-block text-xs text-text-muted hover:text-text no-underline transition-colors"
+        >
+            [github.com/fcannizzaro]
+        </a>
     </section>
 
     <Divider title="recent posts" href="/blog/" />
@@ -98,3 +113,102 @@ const repoData = await fetchRepoData(projects.map((p) => p.data.repo));
         </div>
     </section>
 </BaseLayout>
+
+<style>
+    .home-hero {
+        display: grid;
+        grid-template-areas:
+            "greeting mascot"
+            "description description"
+            "link link";
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 0.75rem;
+        row-gap: 0.75rem;
+    }
+
+    .home-hero__greeting {
+        grid-area: greeting;
+        min-width: 0;
+    }
+
+    .home-hero__name-word {
+        display: inline-block;
+        padding-inline: 0.08em;
+        margin-inline: -0.08em;
+        animation: select-author-word 3s steps(1, end) infinite;
+        animation-delay: calc(var(--word-index) * 1s);
+    }
+
+    @keyframes select-author-word {
+        0%,
+        32% {
+            color: var(--color-bg);
+            background-color: var(--color-text-heading);
+        }
+
+        33%,
+        100% {
+            color: var(--color-text-heading);
+            background-color: transparent;
+        }
+    }
+
+    .home-hero__description {
+        grid-area: description;
+        max-width: 42rem;
+        line-height: 1.65;
+    }
+
+    .home-hero__link {
+        grid-area: link;
+        justify-self: start;
+    }
+
+    .home-hero__mascot {
+        grid-area: mascot;
+        justify-self: end;
+    }
+
+    @media (max-width: 639px) {
+        :global(.home-hero__mascot-slot),
+        :global(.home-hero__mascot-slot .page-mascot) {
+            width: 108px !important;
+            height: 108px !important;
+        }
+    }
+
+    @media (max-width: 420px) {
+        :global(.home-hero__mascot-slot),
+        :global(.home-hero__mascot-slot .page-mascot) {
+            width: 92px !important;
+            height: 92px !important;
+        }
+    }
+
+    @media (min-width: 640px) {
+        .home-hero {
+            grid-template-areas:
+                "greeting mascot"
+                "description mascot"
+                "link mascot";
+            grid-template-columns: minmax(0, 1fr) 140px;
+            column-gap: 1.5rem;
+            row-gap: 0;
+        }
+
+        .home-hero__greeting {
+            margin-bottom: 0.25rem;
+        }
+
+        .home-hero__link {
+            margin-top: 0.5rem;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .home-hero__name-word {
+            animation: none;
+        }
+    }
+</style>

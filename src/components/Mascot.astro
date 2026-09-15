@@ -70,6 +70,7 @@ const {
         appearance: none;
         cursor: pointer;
         pointer-events: auto;
+        touch-action: manipulation;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
     }
@@ -403,6 +404,18 @@ const {
                     });
                 }
 
+                window.addEventListener(
+                    "pointerdown",
+                    (event) => {
+                        if (event.pointerType === "mouse") return;
+
+                        pointer = { x: event.clientX, y: event.clientY };
+                        sector = -1;
+                        aim();
+                    },
+                    { passive: true, signal },
+                );
+
                 window.addEventListener("scroll", scheduleDock, {
                     passive: true,
                     signal,
@@ -426,6 +439,17 @@ const {
                         boopCount = now - lastBoop < 1600 ? boopCount + 1 : 1;
                         lastBoop = now;
 
+                        const reducedMotion = window.matchMedia(
+                            "(prefers-reduced-motion: reduce)",
+                        ).matches;
+
+                        if (reducedMotion) {
+                            setReaction(
+                                PAYOFFS[(boopCount - 1) % PAYOFFS.length],
+                            );
+                            return;
+                        }
+
                         if (boopCount >= 4) {
                             boopCount = 0;
                             setReaction("dizzy");
@@ -436,31 +460,25 @@ const {
                             later(560, null);
                         }
 
-                        if (
-                            !window.matchMedia(
-                                "(prefers-reduced-motion: reduce)",
-                            ).matches
-                        ) {
-                            squash.animate(
-                                [
-                                    { transform: "scale(1, 1)" },
-                                    {
-                                        transform: "scale(1.10, 0.86)",
-                                        offset: 0.18,
-                                    },
-                                    {
-                                        transform: "scale(0.95, 1.08)",
-                                        offset: 0.45,
-                                    },
-                                    {
-                                        transform: "scale(1.03, 0.97)",
-                                        offset: 0.72,
-                                    },
-                                    { transform: "scale(1, 1)" },
-                                ],
-                                { duration: 420, easing: "ease-in-out" },
-                            );
-                        }
+                        squash.animate(
+                            [
+                                { transform: "scale(1, 1)" },
+                                {
+                                    transform: "scale(1.10, 0.86)",
+                                    offset: 0.18,
+                                },
+                                {
+                                    transform: "scale(0.95, 1.08)",
+                                    offset: 0.45,
+                                },
+                                {
+                                    transform: "scale(1.03, 0.97)",
+                                    offset: 0.72,
+                                },
+                                { transform: "scale(1, 1)" },
+                            ],
+                            { duration: 420, easing: "ease-in-out" },
+                        );
                     },
                     { signal },
                 );

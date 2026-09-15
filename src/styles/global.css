@@ -100,14 +100,19 @@ html.light .prose pre code {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .glitch {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+    view-transition-name: none !important;
   }
-  .caret {
-    animation: none;
-  }
-  * {
-    animation-duration: 0.01ms !important;
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
