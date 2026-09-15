@@ -1,9 +1,9 @@
 ---
-title: 'Let AI Agents Detect and Replace Broken Links'
-description: 'An MCP server that scans your files for HTTP links and validates them -- reporting broken URLs with file, line number, and status in a markdown table.'
-pubDate: 'Feb 22 2026'
+title: "Let AI Agents Detect and Replace Broken Links"
+description: "An MCP server that scans your files for HTTP links and validates them -- reporting broken URLs with file, line number, and status in a markdown table."
+pubDate: "Feb 22 2026"
 heroImage: ./broken-links-mcp.webp
-tags: ['broken-links', 'mcp', 'bun', 'typescript', 'ai']
+tags: ["broken-links", "mcp", "bun", "typescript", "ai"]
 ---
 
 Links rot. Documentation, READMEs, code comments -- over time every project accumulates URLs that quietly stop working. I built an MCP server to check all of them at once, so any compatible AI assistant can scan a directory and get a clear report of what's broken.

@@ -1,15 +1,7 @@
 export function relativeDate(date: Date): string {
   const now = new Date();
-  const startOfToday = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-  );
-  const startOfTarget = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-  );
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfTarget = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
   const diffMs = startOfToday.getTime() - startOfTarget.getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));

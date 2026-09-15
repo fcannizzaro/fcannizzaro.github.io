@@ -1,9 +1,9 @@
 ---
-title: 'React Components on Stream Deck Hardware'
-description: 'A library that lets you build Elgato Stream Deck plugins with React -- JSX, hooks, and state instead of imperative SDK callbacks and manual image generation.'
-pubDate: 'Mar 07 2026'
+title: "React Components on Stream Deck Hardware"
+description: "A library that lets you build Elgato Stream Deck plugins with React -- JSX, hooks, and state instead of imperative SDK callbacks and manual image generation."
+pubDate: "Mar 07 2026"
 heroImage: ./streamdeck-react.webp
-tags: ['streamdeck-react', 'react', 'stream-deck', 'typescript', 'elgato']
+tags: ["streamdeck-react", "react", "stream-deck", "typescript", "elgato"]
 ---
 
 The official `@elgato/streamdeck` SDK is powerful but low-level. You track state manually, wire hardware events by hand, and generate key images yourself. Even a simple counter becomes a mix of event handlers, state bookkeeping, and rendering code. I wanted the same model I use in React apps -- declare what the key looks like, let the framework handle the rest. So I built `@fcannizzaro/streamdeck-react`.
@@ -33,8 +33,14 @@ Each visible action instance on the hardware gets its own isolated React root --
 ## Counter example
 
 ```tsx
-import { createPlugin, defineAction, useKeyDown, cn, googleFont } from '@fcannizzaro/streamdeck-react';
-import { useState } from 'react';
+import {
+  createPlugin,
+  defineAction,
+  useKeyDown,
+  cn,
+  googleFont,
+} from "@fcannizzaro/streamdeck-react";
+import { useState } from "react";
 
 function CounterKey() {
   const [count, setCount] = useState(0);
@@ -44,8 +50,8 @@ function CounterKey() {
   return (
     <div
       className={cn(
-        'flex h-full w-full flex-col items-center justify-center gap-1',
-        'bg-linear-to-br from-[#0f172a] to-[#1d4ed8]',
+        "flex h-full w-full flex-col items-center justify-center gap-1",
+        "bg-linear-to-br from-[#0f172a] to-[#1d4ed8]",
       )}
     >
       <span className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white/70">
@@ -57,16 +63,16 @@ function CounterKey() {
 }
 
 const counterAction = defineAction({
-  uuid: 'com.example.react-counter.counter',
+  uuid: "com.example.react-counter.counter",
   key: CounterKey,
   info: {
-    name: 'Counter',
-    icon: 'imgs/actions/counter',
+    name: "Counter",
+    icon: "imgs/actions/counter",
   },
 });
 
 const plugin = createPlugin({
-  fonts: [await googleFont('Inter')],
+  fonts: [await googleFont("Inter")],
   actions: [counterAction],
 });
 

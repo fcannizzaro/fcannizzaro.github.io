@@ -1,9 +1,9 @@
 ---
-title: 'Lightweight Native Webviews for Bun, Deno & Node.js'
-description: 'A lightweight library to create native desktop windows with embedded web content from Bun, Deno & Node.js -- no Electron required, now with Linux support.'
-pubDate: 'Feb 18 2026'
+title: "Lightweight Native Webviews for Bun, Deno & Node.js"
+description: "A lightweight library to create native desktop windows with embedded web content from Bun, Deno & Node.js -- no Electron required, now with Linux support."
+pubDate: "Feb 18 2026"
 heroImage: ./native-window.webp
-tags: ['native-window', 'bun', 'deno', 'typescript', 'desktop', 'webview']
+tags: ["native-window", "bun", "deno", "typescript", "desktop", "webview"]
 ---
 
 While building [Elgato Stream Deck](https://www.elgato.com/stream-deck) plugins, I kept needing to open native windows from key presses -- for richer interaction beyond the small key UI. There's no built-in way to do this without Electron or signed external webview runtimes (see [comparison](https://nativewindow.fcannizzaro.com/comparison)).
@@ -66,12 +66,12 @@ ch.on("user-click", (pos) => {
 
 ## Packages
 
-| Package | Description |
-| --- | --- |
+| Package                 | Description                                               |
+| ----------------------- | --------------------------------------------------------- |
 | `@nativewindow/webview` | Rust napi-rs addon providing native window + webview APIs |
-| `@nativewindow/ipc` | Pure TypeScript typesafe IPC channel layer |
-| `@nativewindow/react` | React bindings for the typed IPC layer |
-| `@nativewindow/tsdb` | TanStack DB collection adapter for native-window IPC |
+| `@nativewindow/ipc`     | Pure TypeScript typesafe IPC channel layer                |
+| `@nativewindow/react`   | React bindings for the typed IPC layer                    |
+| `@nativewindow/tsdb`    | TanStack DB collection adapter for native-window IPC      |
 
 ## Get started
 

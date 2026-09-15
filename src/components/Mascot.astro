@@ -1,0 +1,484 @@
+---
+interface Props {
+    directions: string;
+    reactions: string;
+    dockedDirections?: string;
+    dockedReactions?: string;
+    size?: number;
+    dockedSize?: number;
+    inlineOffset?: number;
+    label?: string;
+    class?: string;
+}
+
+const {
+    directions,
+    reactions,
+    dockedDirections = directions,
+    dockedReactions = reactions,
+    size = 140,
+    dockedSize = size,
+    inlineOffset = 0,
+    label = "mascot",
+    class: className,
+} = Astro.props;
+---
+
+<span
+    class:list={["page-mascot-slot", className]}
+    style={`--mascot-size: ${size}px; --mascot-docked-size: ${dockedSize}px; --mascot-inline-offset: ${inlineOffset}px; --directions: url(${directions}); --reactions: url(${reactions}); --docked-directions: url(${dockedDirections}); --docked-reactions: url(${dockedReactions});`}
+    data-mascot-slot
+>
+    <button
+        type="button"
+        class="page-mascot"
+        aria-label={`Boop the ${label}`}
+        data-page-mascot
+    >
+        <span class="page-mascot__squash" data-mascot-squash>
+            <span
+                class="page-mascot__layer page-mascot__directions"
+                data-mascot-directions
+            ></span>
+            <span
+                class="page-mascot__layer page-mascot__reactions"
+                data-mascot-reactions
+            ></span>
+        </span>
+    </button>
+</span>
+
+<style>
+    .page-mascot-slot {
+        display: block;
+        flex: 0 0 auto;
+        width: var(--mascot-size);
+        height: var(--mascot-size);
+    }
+
+    .page-mascot {
+        position: relative;
+        top: var(--mascot-inline-offset);
+        display: block;
+        flex: 0 0 auto;
+        width: var(--mascot-size);
+        height: var(--mascot-size);
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        appearance: none;
+        cursor: pointer;
+        pointer-events: auto;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .page-mascot--docked {
+        position: fixed;
+        top: auto;
+        z-index: 40;
+        width: var(--mascot-docked-size);
+        height: var(--mascot-docked-size);
+    }
+
+    .page-mascot--entering {
+        animation: mascot-dock-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .page-mascot--exiting {
+        pointer-events: none;
+        animation: mascot-dock-out 260ms cubic-bezier(0.64, 0, 0.78, 0)
+            forwards;
+    }
+
+    @keyframes mascot-dock-in {
+        from {
+            transform: translateY(100%);
+        }
+    }
+
+    @keyframes mascot-dock-out {
+        to {
+            transform: translateY(100%);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .page-mascot--entering,
+        .page-mascot--exiting {
+            animation: none;
+        }
+    }
+
+    .page-mascot:focus-visible {
+        outline: 1px solid var(--color-accent);
+        outline-offset: 3px;
+    }
+
+    .page-mascot__squash {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+        transform-origin: 50% 78%;
+    }
+
+    .page-mascot__layer {
+        position: absolute;
+        inset: 0;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: 300% 300%;
+        transition: opacity 60ms linear;
+    }
+
+    .page-mascot__directions {
+        background-image: var(--directions);
+    }
+
+    .page-mascot__reactions {
+        background-image: var(--reactions);
+        opacity: 0;
+    }
+
+    .page-mascot--docked .page-mascot__directions {
+        background-image: var(--docked-directions);
+    }
+
+    .page-mascot--docked .page-mascot__reactions {
+        background-image: var(--docked-reactions);
+    }
+
+    @media (max-width: 420px) {
+        .page-mascot-slot,
+        .page-mascot {
+            width: calc(var(--mascot-size) * 0.82);
+            height: calc(var(--mascot-size) * 0.82);
+        }
+    }
+</style>
+
+<script>
+    const DIRECTIONS = [
+        "up-left",
+        "up",
+        "up-right",
+        "left",
+        "center",
+        "right",
+        "down-left",
+        "down",
+        "down-right",
+    ] as const;
+
+    const REACTIONS = [
+        "blink",
+        "heart",
+        "sparkle",
+        "surprised",
+        "starstruck",
+        "bashful",
+        "sleepy",
+        "dizzy",
+        "delighted",
+    ] as const;
+
+    const CLOCKWISE = [
+        "right",
+        "down-right",
+        "down",
+        "down-left",
+        "left",
+        "up-left",
+        "up",
+        "up-right",
+    ] as const;
+
+    type Direction = (typeof DIRECTIONS)[number];
+    type Reaction = (typeof REACTIONS)[number];
+
+    const SECTOR = (Math.PI * 2) / CLOCKWISE.length;
+    const HYSTERESIS = 0.12;
+    const DEAD_ZONE = 70;
+    const PAYOFFS: Reaction[] = ["heart", "sparkle", "delighted"];
+
+    function cell(index: number) {
+        return `${(index % 3) * 50}% ${Math.floor(index / 3) * 50}%`;
+    }
+
+    function wrap(angle: number) {
+        return Math.atan2(Math.sin(angle), Math.cos(angle));
+    }
+
+    function setupMascots() {
+        document
+            .querySelectorAll<HTMLElement>("[data-page-mascot]")
+            .forEach((mascot) => {
+                if (mascot.dataset.mascotBound) return;
+                mascot.dataset.mascotBound = "true";
+
+                const directions = mascot.querySelector<HTMLElement>(
+                    "[data-mascot-directions]",
+                );
+                const reactions = mascot.querySelector<HTMLElement>(
+                    "[data-mascot-reactions]",
+                );
+                const slot = mascot.closest<HTMLElement>("[data-mascot-slot]");
+                const squash = mascot.querySelector<HTMLElement>(
+                    "[data-mascot-squash]",
+                );
+                if (!directions || !reactions || !slot || !squash) return;
+
+                const controller = new AbortController();
+                const { signal } = controller;
+                const timers: number[] = [];
+                let sector = -1;
+                let pointer: { x: number; y: number } | null = null;
+                let boopCount = 0;
+                let lastBoop = 0;
+                let dockFrame = 0;
+                let enterTimer = 0;
+                let exitTimer = 0;
+
+                const clearDockedState = () => {
+                    mascot.classList.remove(
+                        "page-mascot--docked",
+                        "page-mascot--entering",
+                        "page-mascot--exiting",
+                    );
+                    mascot.style.left = "";
+                    mascot.style.bottom = "";
+                };
+
+                const enterDock = (left: number) => {
+                    window.clearTimeout(exitTimer);
+                    window.clearTimeout(enterTimer);
+                    exitTimer = 0;
+
+                    mascot.style.left = `${Math.round(left)}px`;
+                    mascot.style.bottom =
+                        "calc(var(--mascot-docked-size) * -0.13)";
+
+                    if (mascot.classList.contains("page-mascot--docked")) {
+                        if (mascot.classList.contains("page-mascot--exiting")) {
+                            mascot.classList.remove("page-mascot--exiting");
+                            mascot.classList.add("page-mascot--entering");
+                        }
+                        return;
+                    }
+
+                    mascot.classList.add(
+                        "page-mascot--docked",
+                        "page-mascot--entering",
+                    );
+                    enterTimer = window.setTimeout(() => {
+                        mascot.classList.remove("page-mascot--entering");
+                        enterTimer = 0;
+                    }, 320);
+                };
+
+                const exitDock = () => {
+                    if (
+                        !mascot.classList.contains("page-mascot--docked") ||
+                        mascot.classList.contains("page-mascot--exiting")
+                    ) {
+                        return;
+                    }
+
+                    window.clearTimeout(enterTimer);
+                    enterTimer = 0;
+                    mascot.classList.remove("page-mascot--entering");
+
+                    if (
+                        window.matchMedia("(prefers-reduced-motion: reduce)")
+                            .matches
+                    ) {
+                        clearDockedState();
+                        return;
+                    }
+
+                    mascot.classList.add("page-mascot--exiting");
+                    exitTimer = window.setTimeout(() => {
+                        clearDockedState();
+                        exitTimer = 0;
+                    }, 260);
+                };
+
+                const updateDock = () => {
+                    const desktop = window.matchMedia(
+                        "(min-width: 1024px) and (hover: hover) and (pointer: fine)",
+                    ).matches;
+                    const shell = document.querySelector<HTMLElement>("body > div");
+                    const shellBox = shell?.getBoundingClientRect();
+                    const dockedSize = Number.parseFloat(
+                        getComputedStyle(slot).getPropertyValue(
+                            "--mascot-docked-size",
+                        ),
+                    );
+                    const gap = 20;
+                    const left = shellBox
+                        ? shellBox.left - dockedSize - gap
+                        : -1;
+                    const hasRoom = left >= 16;
+                    const heroHasPassed = slot.getBoundingClientRect().bottom < 32;
+                    const shouldDock = desktop && hasRoom && heroHasPassed;
+
+                    if (shouldDock) {
+                        enterDock(left);
+                    } else {
+                        exitDock();
+                    }
+                };
+
+                const scheduleDock = () => {
+                    if (dockFrame) return;
+                    dockFrame = window.requestAnimationFrame(() => {
+                        dockFrame = 0;
+                        updateDock();
+                    });
+                };
+
+                const setDirection = (direction: Direction) => {
+                    directions.style.backgroundPosition = cell(
+                        DIRECTIONS.indexOf(direction),
+                    );
+                };
+
+                const setReaction = (reaction: Reaction | null) => {
+                    if (reaction) {
+                        reactions.style.backgroundPosition = cell(
+                            REACTIONS.indexOf(reaction),
+                        );
+                        directions.style.opacity = "0";
+                        reactions.style.opacity = "1";
+                    } else {
+                        directions.style.opacity = "1";
+                        reactions.style.opacity = "0";
+                    }
+                };
+
+                const aim = () => {
+                    if (!pointer) return;
+                    const box = mascot.getBoundingClientRect();
+                    const dx = pointer.x - (box.left + box.width / 2);
+                    const dy = pointer.y - (box.top + box.height / 2);
+
+                    if (Math.hypot(dx, dy) < DEAD_ZONE) {
+                        sector = -1;
+                        setDirection("center");
+                        return;
+                    }
+
+                    const angle = Math.atan2(dy, dx);
+                    if (
+                        sector !== -1 &&
+                        Math.abs(wrap(angle - sector * SECTOR)) <
+                            SECTOR / 2 + HYSTERESIS
+                    ) {
+                        return;
+                    }
+
+                    sector =
+                        (Math.round(angle / SECTOR) + CLOCKWISE.length) %
+                        CLOCKWISE.length;
+                    setDirection(CLOCKWISE[sector]);
+                };
+
+                if (
+                    window.matchMedia("(hover: hover) and (pointer: fine)")
+                        .matches
+                ) {
+                    window.addEventListener(
+                        "pointermove",
+                        (event) => {
+                            pointer = { x: event.clientX, y: event.clientY };
+                            aim();
+                        },
+                        { passive: true, signal },
+                    );
+                    window.addEventListener("scroll", aim, {
+                        passive: true,
+                        signal,
+                    });
+                }
+
+                window.addEventListener("scroll", scheduleDock, {
+                    passive: true,
+                    signal,
+                });
+                window.addEventListener("resize", scheduleDock, { signal });
+                updateDock();
+
+                mascot.addEventListener(
+                    "click",
+                    () => {
+                        timers.forEach(window.clearTimeout);
+                        timers.length = 0;
+
+                        const later = (ms: number, next: Reaction | null) => {
+                            timers.push(
+                                window.setTimeout(() => setReaction(next), ms),
+                            );
+                        };
+
+                        const now = Date.now();
+                        boopCount = now - lastBoop < 1600 ? boopCount + 1 : 1;
+                        lastBoop = now;
+
+                        if (boopCount >= 4) {
+                            boopCount = 0;
+                            setReaction("dizzy");
+                            later(1100, null);
+                        } else {
+                            setReaction("blink");
+                            later(120, PAYOFFS[(boopCount - 1) % PAYOFFS.length]);
+                            later(560, null);
+                        }
+
+                        if (
+                            !window.matchMedia(
+                                "(prefers-reduced-motion: reduce)",
+                            ).matches
+                        ) {
+                            squash.animate(
+                                [
+                                    { transform: "scale(1, 1)" },
+                                    {
+                                        transform: "scale(1.10, 0.86)",
+                                        offset: 0.18,
+                                    },
+                                    {
+                                        transform: "scale(0.95, 1.08)",
+                                        offset: 0.45,
+                                    },
+                                    {
+                                        transform: "scale(1.03, 0.97)",
+                                        offset: 0.72,
+                                    },
+                                    { transform: "scale(1, 1)" },
+                                ],
+                                { duration: 420, easing: "ease-in-out" },
+                            );
+                        }
+                    },
+                    { signal },
+                );
+
+                document.addEventListener(
+                    "astro:before-swap",
+                    () => {
+                        controller.abort();
+                        window.cancelAnimationFrame(dockFrame);
+                        window.clearTimeout(enterTimer);
+                        window.clearTimeout(exitTimer);
+                        timers.forEach(window.clearTimeout);
+                    },
+                    { once: true },
+                );
+            });
+    }
+
+    document.addEventListener("astro:page-load", setupMascots);
+    setupMascots();
+</script>

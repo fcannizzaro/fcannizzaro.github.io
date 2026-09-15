@@ -18,11 +18,6 @@ export default defineConfig({
   ],
   vite: { plugins: [tailwindcss()] },
   markdown: {
-    rehypePlugins: [
-      [
-        rehypeExternalLinks,
-        { target: "_blank", rel: ["noopener", "noreferrer"] },
-      ],
-    ],
+    rehypePlugins: [[rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }]],
   },
 });

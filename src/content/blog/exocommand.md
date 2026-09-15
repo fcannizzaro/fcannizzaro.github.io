@@ -1,9 +1,9 @@
 ---
-title: 'One MCP Server to Rule All Your Projects Commands'
-description: 'A centralized MCP server that manages multiple projects with user-defined shell commands -- controlled terminal access for AI coding assistants without giving up the keys.'
-pubDate: 'Feb 21 2026'
+title: "One MCP Server to Rule All Your Projects Commands"
+description: "A centralized MCP server that manages multiple projects with user-defined shell commands -- controlled terminal access for AI coding assistants without giving up the keys."
+pubDate: "Feb 21 2026"
 heroImage: ./exocommand.webp
-tags: ['exocommand', 'mcp', 'bun', 'typescript', 'ai']
+tags: ["exocommand", "mcp", "bun", "typescript", "ai"]
 ---
 
 If you run AI coding agents inside Docker containers or sandboxes, you already know the trade-off: the agent can do its thing safely, but some commands need to run on the actual machine -- PlatformIO compile-flash-monitor cycles, Rust builds, database migrations, deployment pipelines. Giving the agent unrestricted shell access on the host is not an option.

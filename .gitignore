@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # agent
 .opencode
+characters/fcannizzaro/
+.agents/skills/page-mascot/
+skills-lock.json

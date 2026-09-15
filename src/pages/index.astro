@@ -5,6 +5,7 @@ import BlogEntry from "../components/BlogEntry.astro";
 import ProjectEntry from "../components/ProjectEntry.astro";
 import TechGrid from "../components/TechGrid.astro";
 import Divider from "../components/Divider.astro";
+import Mascot from "../components/Mascot.astro";
 import {
     SITE_TITLE,
     SITE_DESCRIPTION,
@@ -28,22 +29,32 @@ const repoData = await fetchRepoData(projects.map((p) => p.data.repo));
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
-    <section>
-        <p class="text-text mb-1">
-            Hi, I'm <strong class="text-text-heading">{SITE_AUTHOR}</strong>.
-        </p>
-        <p class="text-text-muted text-sm">
-            Full Stack Developer. I build open source tools, Stream Deck
-            plugins, and developer tooling with TypeScript and Node.js.
-        </p>
-        <a
-            href={GITHUB_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-block mt-2 text-xs text-text-muted hover:text-text no-underline transition-colors"
-        >
-            [github.com/fcannizzaro]
-        </a>
+    <section class="flex items-center justify-between gap-4">
+        <div>
+            <p class="text-text mb-1">
+                Hi, I'm <strong class="text-text-heading">{SITE_AUTHOR}</strong>.
+            </p>
+            <p class="text-text-muted text-sm">
+                Full Stack Developer. I build open source tools, Stream Deck
+                plugins, and developer tooling with TypeScript and Node.js.
+            </p>
+            <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-block mt-2 text-xs text-text-muted hover:text-text no-underline transition-colors"
+            >
+                [github.com/fcannizzaro]
+            </a>
+        </div>
+        <Mascot
+            directions="/mascots/fcannizzaro-directions.webp"
+            reactions="/mascots/fcannizzaro-reactions.webp"
+            dockedDirections="/mascots/fcannizzaro-docked-directions.webp"
+            dockedReactions="/mascots/fcannizzaro-docked-reactions.webp"
+            size={140}
+            label="Francesco mascot"
+        />
     </section>
 
     <Divider title="recent posts" href="/blog/" />
