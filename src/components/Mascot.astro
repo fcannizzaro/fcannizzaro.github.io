@@ -310,6 +310,9 @@ const {
                     const desktop = window.matchMedia(
                         "(min-width: 1024px) and (hover: hover) and (pointer: fine)",
                     ).matches;
+                    const landscapeTablet = window.matchMedia(
+                        "(min-width: 768px) and (orientation: landscape) and (pointer: coarse)",
+                    ).matches;
                     const shell = document.querySelector<HTMLElement>("body > div");
                     const shellBox = shell?.getBoundingClientRect();
                     const dockedSize = Number.parseFloat(
@@ -318,12 +321,18 @@ const {
                         ),
                     );
                     const gap = 20;
-                    const left = shellBox
+                    const gutterLeft = shellBox
                         ? shellBox.left - dockedSize - gap
                         : -1;
+                    const left = landscapeTablet
+                        ? Math.max(16, gutterLeft)
+                        : gutterLeft;
                     const hasRoom = left >= 16;
                     const heroHasPassed = slot.getBoundingClientRect().bottom < 32;
-                    const shouldDock = desktop && hasRoom && heroHasPassed;
+                    const shouldDock =
+                        (desktop || landscapeTablet) &&
+                        hasRoom &&
+                        heroHasPassed;
 
                     if (shouldDock) {
                         enterDock(left);
